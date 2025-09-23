@@ -14,7 +14,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 > Using `Poetry` (Requires Poetry installed)
-```
+```sh
 poetry install
 poetry shell
 ```

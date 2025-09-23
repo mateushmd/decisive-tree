@@ -5,7 +5,9 @@ data = pd.read_csv('data/restaurante.csv', sep=';')
 X = data.iloc[:, :-1]
 y = data.iloc[:, -1]
 
-print(util.indexes_of(y, 'Sim'))
+tree = ID3()
+tree.fit(X, y)
 
-freqs = util.relative_frequency(X['Cliente'].values)
-print({item: util.indexes_of(X['Cliente'].values, item) for item in freqs.keys()})
+gains = {c: tree.gain(X[c], y) for c in X.columns}
+print(gains)
+print(min(gains, key=gains.get))

@@ -6,14 +6,23 @@ from . import util
 
 class ID3:
     def __init__(self):
+        self.X = None
         self.y = None
         self.e_y = 0
     
     def fit(self, X: pd.DataFrame, y: pd.DataFrame):
-        self.y = y.values
-        self.e_y = util.entropy(util.relative_frequency(y).values)
-    
-    def gain(self, attr: List[Any]) -> float:
-        freqs = util.relative_frequency(attr)
-        y_freqs = {item: util.indexes_of(attr, item) for item in freqs.keys()}
-        return self.e_y - sum(())
+        
+
+    def build_tree(X: pd.DataFrame, y: pd.DataFrame):
+        return
+
+    def gain(self, attr: pd.Series, y: pd.DataFrame) -> float:
+        y_v = y.values
+        e_y = util.entropy(*list(util.rfreq(y_v).values()))
+        a_v = attr.values
+        freqs = util.rfreq(a_v)
+        s = 0
+        for k in freqs.keys():
+            filtered = [y_v[i] for i in util.indexes_of(a_v, k)]
+            s += freqs[k] * util.entropy(*list(util.rfreq(filtered).values()))
+        return self.e_y - s
