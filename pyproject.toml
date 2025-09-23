@@ -3,7 +3,7 @@ name = "wisdom-tree"
 version = "0.1.0"
 description = ""
 authors = [
-    {name = "Mateus",email = "chenri48155@gmail.com"}
+    {name = "Mateus",email = "mateushmdiniz@gmail.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11"
