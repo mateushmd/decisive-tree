@@ -8,30 +8,49 @@ from treelib import Tree
 
 class ID3:
     def __init__(self):
-        self.tree = Tree()
+        self._tree = None
+        self._classes = None
+
+    def plot(self):
+        self._tree.show(data_property="tostr")
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame):
-        return
+        self._tree = Tree()
+        self._classes = y.unique()
+        self._tree.create_node(tag="Root", identifier="root")
+        self._build_tree(X, y, "root")
+        return self
 
-    def build_tree(X: pd.DataFrame, y: pd.DataFrame, cur_node: str):
-        best = min({ c: gain(X[c], y) for c in X.columns })
-        feat_vals = np.unique(X[best]).tolist()
-        for val in feat_vals:
-            indexes = util.indexes_of(X[best], val)
-            new_y = [y[i] for i in indexes]
-            unique_classes = np.unique(new_y).tolist()
-            node_data = None
-            if len(unique_classes) == 1:
-                node_data = NodeData(True, len(new_y), util.count_items(new_y), prediction=unique_classes[0])
-            else:
-                node_data = NodeData(False, len(new_y), util.count_items(new_y), feature=val)
-
-            self.tree.create_node(val, val, parent=cur_node, data=node_data)
+    def _build_tree(self, X: pd.DataFrame, y: pd.Series, cur_id: str, branch=None):
+        samples_count = len(y)
+        samples_per_class = y.value_counts().reindex(self._classes, fill_value=0).tolist()
+        
+        if len(y.unique()) == 1:
+            prediction = y.iloc[0]
+            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=prediction)
             return
-            new_X = X.iloc[indexes]
-            
 
-    def gain(self, attr: pd.Series, y: pd.DataFrame) -> float:
+        if len(X.columns) == 0:
+            majority_class = y.mode()[0]
+            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class)
+            return
+
+        gains = { c: self._gain(X[c], y) for c in X.columns }
+        best_feature = max(gains, key=gains.get)
+        
+        self._tree.get_node(cur_id).data = NodeData(False, samples_count, *samples_per_class, branch=branch, feature=best_feature)
+
+        for value in X[best_feature].unique():
+            child_id = f"{cur_id}_{value}"
+            self._tree.create_node(tag=str(value), identifier=child_id, parent=cur_id)
+
+            subset_indices = X[X[best_feature] == value].index
+            new_X = X.loc[subset_indices].drop(columns=[best_feature])
+            new_y = y.loc[subset_indices]
+
+            self._build_tree(new_X, new_y, child_id, branch=value)
+            
+    def _gain(self, attr: pd.Series, y: pd.DataFrame) -> float:
         y_vals = y.values
         a_vals = attr.values
         freqs = util.relative_freq(a_vals)
