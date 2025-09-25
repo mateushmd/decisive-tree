@@ -1,10 +1,9 @@
 from collections import Counter
 from typing import Any, List, Optional, Callable
+from treelib import Tree
+from .node_data import NodeData
 import pandas as pd
 import numpy as np
-from . import util
-from .node_data import NodeData
-from treelib import Tree
 
 class ID3:
     def __init__(self):
@@ -51,11 +50,9 @@ class ID3:
             self._build_tree(new_X, new_y, child_id, branch=value)
             
     def _gain(self, attr: pd.Series, y: pd.DataFrame) -> float:
-        y_vals = y.values
-        a_vals = attr.values
-        freqs = util.relative_freq(a_vals)
         s = 0
-        for k in freqs.keys():
-            filtered = [y_vals[i] for i in util.indexes_of(a_vals, k)]
-            s += freqs[k] * util.entropy(*list(util.relative_freq(filtered).values()))
-        return util.entropy(*list(util.relative_freq(y_vals).values())) - s
+        freqs = attr.value_counts(normalize=True)
+        for k in freqs.index:
+            filtered = y[attr == k]
+            s += freqs[k] * np.sum((-pi * np.log2(pi)) for pi in filtered.value_counts(normalize=True))
+        return np.sum((-pi * np.log2(pi)) for pi in y.value_counts(normalize=True)) - s

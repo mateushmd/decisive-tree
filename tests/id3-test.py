@@ -1,4 +1,4 @@
-from wisdom_tree import ID3, util
+from wisdom_tree import ID3
 import pandas as pd
 import numpy as np
 
