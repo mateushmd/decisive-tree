@@ -1,5 +1,3 @@
-from collections import Counter
-from typing import Any, List, Optional, Callable
 from treelib import Tree
 from .node_data import NodeData
 import pandas as pd
@@ -54,5 +52,8 @@ class ID3:
         freqs = attr.value_counts(normalize=True)
         for k in freqs.index:
             filtered = y[attr == k]
-            s += freqs[k] * np.sum((-pi * np.log2(pi)) for pi in filtered.value_counts(normalize=True))
-        return np.sum((-pi * np.log2(pi)) for pi in y.value_counts(normalize=True)) - s
+            s += freqs[k] * self._entropy(filtered)
+        return self._entropy(y) - s
+    
+    def _entropy(self, data: pd.Series) -> float:
+        return np.sum((-pi * np.log2(pi)) for pi in data.value_counts(normalize=True))
