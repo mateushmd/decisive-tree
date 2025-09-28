@@ -3,9 +3,9 @@ requires = ["setuptools>=65.5"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "wisdom-tree"
+name = "decisive-tree"
 version = "0.1.0"
-description = "A collection of very wise decision trees"
+description = "A collection of very decisive decision trees"
 requires-python = ">=3.11"
 
 authors = [{ name = "Mateus Diniz", email = "mateushmdiniz@gmail.com" }]
@@ -25,8 +25,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mateushmd/wisdom-tree"
-"Bug Tracker" = "https://github.com/mateushmd/wisdom-tree/issues"
+Homepage = "https://github.com/mateushmd/decisive-tree"
+"Bug Tracker" = "https://github.com/mateushmd/decisive-tree/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
