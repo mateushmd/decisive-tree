@@ -1,8 +1,18 @@
 class NodeData:
-    def __init__(self, is_leaf: bool, samples: int, *samples_values: int, branch=None, prediction=None, feature=None, threshold=None):
+    def __init__(
+            self, 
+            is_leaf: bool, 
+            samples: int, 
+            *samples_values: int, 
+            branch=None, 
+            prediction=None, 
+            majority_prediction=None,
+            feature=None, 
+            threshold=None):
         self.is_leaf = is_leaf
         self.branch = branch
         self.prediction = prediction
+        self.majority_prediction = majority_prediction
         self.feature = feature
         self.threshold = threshold
         self.tostr = ""

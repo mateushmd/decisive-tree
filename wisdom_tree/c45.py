@@ -42,7 +42,7 @@ class C45:
                         break
 
             if next_node == None:
-                raise ValueError("Prediction failed: unknown tree path")
+                return cur_node.data.majority_prediction
             
             cur_node = next_node
         
@@ -52,24 +52,26 @@ class C45:
         samples_count = len(y)
         samples_per_class = y.value_counts().reindex(self._classes, fill_value=0).tolist()
 
+        majority_class = y.mode()[0]
+
         if len(y.unique()) == 1:
             prediction = y.iloc[0]
-            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=prediction)
+            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=prediction, majority_prediction=majority_class)
             return
 
         if len(X.columns) == 0:
             majority_class = y.mode()[0]
-            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class)
+            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class, majority_prediction=majority_class)
             return
         
         best_feature, split_point = self._best_split(X, y)
 
         if best_feature is None:
             majority_class = y.mode()[0]
-            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class)
+            self._tree.get_node(parent_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class, majority_prediction=majority_class)
             return
 
-        node_data = NodeData(False, samples_count, *samples_per_class, branch=branch, feature=best_feature, threshold=split_point)
+        node_data = NodeData(False, samples_count, *samples_per_class, branch=branch, feature=best_feature, threshold=split_point, majority_prediction=majority_class)
         self._tree.get_node(parent_id).data = node_data
 
         if split_point is None:

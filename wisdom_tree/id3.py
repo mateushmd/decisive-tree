@@ -36,7 +36,7 @@ class ID3:
                     break
 
             if next_node == None:
-                raise ValueError("Prediction failed: unknown tree path")
+                return cur_node.data.majority_prediction
             
             cur_node = next_node
         
@@ -47,20 +47,22 @@ class ID3:
         samples_count = len(y)
         samples_per_class = y.value_counts().reindex(self._classes, fill_value=0).tolist()
         
+        majority_class = y.mode()[0]
+
         if len(y.unique()) == 1:
             prediction = y.iloc[0]
-            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=prediction)
+            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=prediction, majority_prediction=majority_class)
             return
 
         if len(X.columns) == 0:
             majority_class = y.mode()[0]
-            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class)
+            self._tree.get_node(cur_id).data = NodeData(True, samples_count, *samples_per_class, branch=branch, prediction=majority_class, majority_prediction=majority_class)
             return
 
         gains = { c: self._gain(X[c], y) for c in X.columns }
         best_feature = max(gains, key=gains.get)
         
-        self._tree.get_node(cur_id).data = NodeData(False, samples_count, *samples_per_class, branch=branch, feature=best_feature)
+        self._tree.get_node(cur_id).data = NodeData(False, samples_count, *samples_per_class, branch=branch, feature=best_feature, majority_prediction=majority_class)
 
         for value in X[best_feature].unique():
             child_id = f"{cur_id}_{value}"
