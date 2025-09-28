@@ -1,4 +1,4 @@
-# Wisdom Tree
+# Decisive Tree
 My own ID3, C4.5 and CART implementations from scratch using only Python and some helper libraries for a college assignment.
 ## Build & Run
 > Using `requirements.txt`
