@@ -30,5 +30,5 @@ Homepage = "https://github.com/mateushmd/decisive-tree"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["wisdom_tree"]
+include = ["decisive_tree"]
 exclude = ["tests*", "data*"]
