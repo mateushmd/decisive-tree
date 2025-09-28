@@ -6,7 +6,7 @@ import numpy as np
 from typing import List, Tuple, Any
 from itertools import chain, combinations
 
-class Cart:
+class CART:
     def __init__(self, mode='classification', min_samples_leaf=1, max_depth=10):
         if mode not in ['classification', 'regression']:
             raise ValueError("mode must be 'classification' or 'regression'")
