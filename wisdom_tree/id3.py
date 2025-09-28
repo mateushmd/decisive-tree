@@ -1,5 +1,6 @@
 from treelib import Tree
 from .node_data import NodeData
+from typing import List
 import pandas as pd
 import numpy as np
 
@@ -17,6 +18,30 @@ class ID3:
         self._tree.create_node(tag="Root", identifier="root")
         self._build_tree(X, y, "root")
         return self
+    
+    def predict(self, X: pd.DataFrame) -> List[str]:
+        return [self._predict(row) for _, row in X.iterrows()]
+
+    def _predict(self, sample: pd.Series) -> str:
+        cur_node = self._tree.get_node(self._tree.root)
+
+        while not cur_node.data.is_leaf:
+            feature = cur_node.data.feature
+            value = sample[feature]
+            next_node = None
+
+            for child in self._tree.children(cur_node.identifier):
+                if child.tag == value:
+                    next_node = child
+                    break
+
+            if next_node == None:
+                raise ValueError("Prediction failed: unknown tree path")
+            
+            cur_node = next_node
+        
+        return cur_node.data.prediction
+
 
     def _build_tree(self, X: pd.DataFrame, y: pd.Series, cur_id: str, branch=None):
         samples_count = len(y)

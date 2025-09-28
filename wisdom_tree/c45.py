@@ -1,9 +1,9 @@
 from treelib import Tree
 from .node_data import NodeData
-import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from typing import List, Tuple
+import pandas as pd
 import numpy as np
-from typing import Tuple
 
 class C45:
     def __init__(self):
@@ -19,6 +19,34 @@ class C45:
         self._tree.create_node(tag="Root", identifier="root")
         self._build_tree(X, y, "root")
         return self
+    
+    def predict(self, X: pd.DataFrame) -> List[str]:
+        return [self._predict(row) for _, row in X.iterrows()]
+    
+    def _predict(self, sample: pd.Series) -> str:
+        cur_node = self._tree.get_node(self._tree.root)
+
+        while not cur_node.data.is_leaf:
+            feature = cur_node.data.feature
+            threshold = cur_node.data.threshold
+            value = sample[feature]
+            children = self._tree.children(cur_node.identifier)
+            next_node = None
+
+            if threshold != None:
+                next_node = children[0] if value <= threshold else children[1]
+            else:
+                for child in children:
+                    if child.tag == value:
+                        next_node = child
+                        break
+
+            if next_node == None:
+                raise ValueError("Prediction failed: unknown tree path")
+            
+            cur_node = next_node
+        
+        return cur_node.data.prediction
 
     def _build_tree(self, X: pd.DataFrame, y: pd.Series, parent_id: str, branch=None):
         samples_count = len(y)
